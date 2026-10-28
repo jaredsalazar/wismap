@@ -3,7 +3,7 @@
   "buildCommand": "python tools/vercel_build.py",
   "functions": {
     "app.py": {
-      "includeFiles": "{data/*.yml,wismap/static/**,frontend/dist/index.html}"
+      "includeFiles": "{data/*.yml,wismap/static/**,frontend/dist/**}"
     }
   }
 }
