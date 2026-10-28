@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { fetchBases, fetchBase, fetchCores, fetchModules, validate, solve } from '../api'
 import FunctionTable from './FunctionTable'
+import SelectionPreview from './SelectionPreview'
 import { encodeCombineId } from '../utils/combineId'
 
 export default function CombineTool({ initialConfig, onConfigConsumed }) {
@@ -249,6 +250,7 @@ export default function CombineTool({ initialConfig, onConfigConsumed }) {
               ))}
             </select>
           </label>
+          <SelectionPreview item={bases.find(b => b.id === selectedBase)} />
 
           {baseInfo && baseInfo.slots.map(slotName => {
             const slotInfo = (baseInfo.slot_info || {})[slotName] || {}
@@ -269,6 +271,7 @@ export default function CombineTool({ initialConfig, onConfigConsumed }) {
                     <option key={m.id} value={m.id}>{m.name}</option>
                   ))}
                 </select>
+                <SelectionPreview item={eligible.find(m => m.id === assignments[slotName])} />
               </label>
             )
           })}
@@ -403,3 +406,4 @@ function unplacedReason(code) {
     default: return code
   }
 }
+
