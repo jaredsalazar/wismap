@@ -1024,6 +1024,7 @@ def get_cores(definitions, config):
         out.append({
             'id': _to_display_id(cid),
             'name': c.get('description', ''),
+            'images': c.get('images') or [],
             'type': 'WisCore',
             'category': c.get('category'),
             'mcu': c.get('mcu'),
@@ -1072,6 +1073,7 @@ def get_bases(definitions):
         out.append({
             'id': _to_display_id(bid),
             'name': b.get('description', ''),
+            'images': b.get('images') or [],
             'type': 'WisBase',
             'category': b.get('category'),
             'form_factor': b.get('form_factor'),
@@ -1137,6 +1139,7 @@ def get_modules_v1(definitions, compatible_slots_index, *,
         out.append({
             'id': _to_display_id(mid),
             'name': m.get('description', ''),
+            'images': m.get('images') or [],
             'chip': m.get('chip'),
             'type': mtype,
             'category': m.get('category'),
@@ -1886,3 +1889,4 @@ def solve_v1(definitions, config, rules, compat_idx, request_body):
         'warnings': warnings,
     }
     return response, None, 200
+
