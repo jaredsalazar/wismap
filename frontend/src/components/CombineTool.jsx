@@ -369,6 +369,18 @@ export default function CombineTool({ initialConfig, onConfigConsumed }) {
 
         <div>
           {result && <FunctionTable result={result} />}
+          {!selectedBase && bases.length > 0 && (
+            <section className="combine-welcome" aria-labelledby="combine-welcome-title">
+              {bases[0].images?.[0] && (
+                <img src={bases[0].images[0]} alt={bases[0].name} />
+              )}
+              <div>
+                <p className="combine-welcome-kicker">WisBlock pin mapper</p>
+                <h2 id="combine-welcome-title">Choose a base board to get started</h2>
+                <p>Pick a board from the menu. Its slots and photo will appear here, and you can preview each module as you add it.</p>
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </div>
