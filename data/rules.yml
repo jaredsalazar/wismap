@@ -1,0 +1,44 @@
+rules:
+- code: i2c_address_collision
+  description: Possible conflict with I2C addresses
+  match:
+    condition: duplicates
+    function: I2C_ADDR
+  name: i2c_address_conflict
+  severity: error
+- code: pin_contention
+  description: Possible conflict with ADC_VBAT if using AIN0
+  exclude:
+  - rak6421
+  match:
+    condition: any_used
+    function: AIN0
+  name: ain0_adc_vbat
+  severity: warning
+- code: pin_contention
+  description: Possible conflict with {function}
+  match:
+    condition: multiple_used
+    function_prefix:
+    - IO
+    - AIN
+    - GPIO
+    - UART
+    - LED
+    - SW
+    - SPI_CS
+  name: exclusive_signal
+  severity: error
+- code: power_pin_conflict
+  description: Possible conflict with 3V3_S enable signal if using IO2
+  highlights:
+  - IO2
+  - 3V3_S
+  match:
+    also_requires:
+      condition: any_used
+      function: 3V3_S
+    condition: any_used
+    function: IO2
+  name: io2_3v3s_enable
+  severity: warning

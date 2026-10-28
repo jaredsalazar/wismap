@@ -1,0 +1,31 @@
+# Upstream checkout materialized by CI / a local `make sync-data` clone
+.upstream
+
+# Python
+*.pyc
+.venv
+.work
+__pycache__
+
+# NodeJS
+node_modules
+frontend/dist
+public
+
+# Agent
+AGENTS.md
+CLAUDE.md
+.sdd
+.claude
+
+# Vagrant
+.vagrant
+Vagrantfile
+
+# Private
+docker-compose-contabo01.yml
+.env
+
+# API keys — real key files are never committed; the example is kept
+data/api_keys*.yml
+!data/api_keys.example.yml

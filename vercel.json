@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "python tools/vercel_build.py",
+  "functions": {
+    "app.py": {
+      "includeFiles": [
+        "data/*.yml",
+        "wismap/static/**",
+        "frontend/dist/index.html"
+      ]
+    }
+  }
+}
