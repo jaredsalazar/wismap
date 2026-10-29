@@ -13,6 +13,7 @@ export default function CombineTool({ initialConfig, onConfigConsumed }) {
   const [assignments, setAssignments] = useState({}) // { SLOT_NAME: 'RAK4631' }
   const [blocked, setBlocked] = useState(new Set())
   const [result, setResult] = useState(null)
+  const [validationError, setValidationError] = useState(null)
   const pendingConfig = useRef(null)
   // Monotonic id so a slow validate() response from a previous base can't
   // overwrite the cleared state.
@@ -59,6 +60,7 @@ export default function CombineTool({ initialConfig, onConfigConsumed }) {
   useEffect(() => {
     setBaseInfo(null)
     setResult(null)
+    setValidationError(null)
     setAssignments({})
     setBlocked(new Set())
     setSolutions(null)
@@ -143,6 +145,7 @@ export default function CombineTool({ initialConfig, onConfigConsumed }) {
     // launch a stale validate against the previous base.
     if (!baseInfo || !selectedBase || baseInfo.id !== selectedBase) {
       setResult(null)
+      setValidationError(null)
       return
     }
     const slotInfo = baseInfo.slot_info || {}
@@ -163,12 +166,24 @@ export default function CombineTool({ initialConfig, onConfigConsumed }) {
     // plays that role, so we validate without a Core.
     if (baseHasCoreSlot && !coreId) {
       setResult(null)
+      setValidationError(null)
       return
     }
     // Tag the request; only apply its result if it's still the most recent one.
     const reqId = ++validateReqId.current
     validate({ core: coreId, base: baseInfo.id, slots }).then(res => {
-      if (reqId === validateReqId.current) setResult(res)
+      if (reqId !== validateReqId.current) return
+      if (res?.error) {
+        setResult(null)
+        setValidationError(res.error.message || 'Validation failed.')
+        return
+      }
+      setValidationError(null)
+      setResult(res)
+    }).catch(() => {
+      if (reqId !== validateReqId.current) return
+      setResult(null)
+      setValidationError('Validation request failed. Refresh the page and try again.')
     })
   }, [baseInfo, selectedBase, assignments, blocked])
 
@@ -368,6 +383,7 @@ export default function CombineTool({ initialConfig, onConfigConsumed }) {
         </div>
 
         <div>
+          {validationError && <div className="solve-error" role="alert">{validationError} Refresh the page to renew your session.</div>}
           {result && <FunctionTable result={result} />}
           {!selectedBase && bases.length > 0 && (
             <section className="combine-welcome" aria-labelledby="combine-welcome-title">
