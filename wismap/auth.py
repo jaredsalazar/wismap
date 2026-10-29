@@ -241,12 +241,18 @@ class AuthConfig:
         return _unsign(self.secret_key, _csrf_salt(sid), cookie_token) is not None
 
     def has_valid_session_cookie(self, request) -> bool:
-        """True iff a validly-signed ``wismap_session`` cookie is present (ignores
-        CSRF). Used by ``serve_spa`` to decide whether to (re)mint: minting must be
-        sticky across plain navigations, which carry the session cookie but not the
-        ``X-CSRF-Token`` header — so :meth:`verify_session` (which requires the full
-        double-submit pair) is the wrong check there. A tampered/absent cookie is
-        treated as "no session", so it self-heals on the next page load.
+        """True iff the browser has a valid signed session and its bound CSRF cookie.
+
+        Used by ``serve_spa`` to decide whether to (re)mint. Page navigations do not
+        carry the ``X-CSRF-Token`` header, so :meth:`verify_session` cannot be used
+        here. Checking both cookies lets the SPA repair a partially cleared or stale
+        CSRF cookie on the next page load instead of repeatedly returning 403.
         """
         signed = request.cookies.get(SESSION_COOKIE)
-        return bool(signed) and _unsign(self.secret_key, "session", signed) is not None
+        if not signed:
+            return False
+        sid = _unsign(self.secret_key, "session", signed)
+        if sid is None:
+            return False
+        csrf = request.cookies.get(CSRF_COOKIE, "")
+        return bool(csrf) and _unsign(self.secret_key, _csrf_salt(sid), csrf) is not None
